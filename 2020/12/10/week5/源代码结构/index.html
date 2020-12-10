@@ -1,0 +1,269 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title> | 孙启明的blog</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.1.1/styles/solarized-light.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+    <link rel="stylesheet" href="/custom.css"/>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/icon512.png">
+    <meta name="theme-color" content="#ffffff"/>
+    
+  <meta name="generator" content="Hexo 5.2.0"></head>
+  <body>
+    <script>
+      if ('serviceWorker' in navigator && false) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('/sw.js', {scope: '/'})
+            .then(function (registration) {
+              // console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            })
+            .catch(function (err) {
+              console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+      }
+    </script>
+  <div id="page-container">
+    <nav class="navbar nav-shadow" role="navigation" aria-label="main navigation">
+  <div class="container">
+      <div class="navbar-brand">
+          <a class="navbar-item" href="/">
+              <img src="/icon192.png" height="50">
+          </a>
+          <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+             data-target="mainNavbar">
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+          </a>
+      </div>
+      <div id="mainNavbar" class="navbar-menu">
+          <div class="navbar-start">
+              <a class="navbar-item" href="/"> 孙启明的blog </a>
+              <a class="navbar-item" href="/archives"> Archives </a>
+              <a class="navbar-item" href="/about"> About </a>
+          </div>
+      </div>
+  </div>
+</nav>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+  if ($navbarBurgers.length > 0) {
+    $navbarBurgers.forEach( el => {
+      el.addEventListener('click', () => {
+        const target = el.dataset.target;
+        const $target = document.getElementById(target);
+        el.classList.toggle('is-active');
+        $target.classList.toggle('is-active');
+      });
+    });
+  }
+});
+</script>
+    <div id="content-wrap">
+        <div class="container">
+          <div class="article-container">
+  <h1 class="title is-3 is-4-mobile"></h1>
+  <article>
+      <div class="contents">
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B9%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="toc-text">根目录结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%B8%ADtensorflow-core%E6%98%AFtf%E7%9A%84%E6%A0%B8%E5%BF%83%E6%A8%A1%E5%9D%97"><span class="toc-text">其中tensorflow&#x2F;core是tf的核心模块</span></a></li></ol>
+      </div>
+      <h3 id="根目录结构"><a href="#根目录结构" class="headerlink" title="根目录结构"></a>根目录结构</h3><p>首先整体看一下整体的目录结构：</p>
+<p><img src="https://github.com/dongbeiyewu/xla/raw/master/week5/pic/1.png"></p>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>tensorflow/c</td>
+<td>C API代码</td>
+</tr>
+<tr>
+<td>tensorflow/cc</td>
+<td>C++ API代码</td>
+</tr>
+<tr>
+<td>tensorflow/compiler</td>
+<td>XLA,JIT等编译优化相关</td>
+</tr>
+<tr>
+<td>tensorflow/contrib</td>
+<td>contributor贡献的代码，这个目录并不是官方支持的， 很有可能在高级</td>
+</tr>
+<tr>
+<td>tensorflow/core</td>
+<td>tf核心代码</td>
+</tr>
+<tr>
+<td>tensorflow/docs_src</td>
+<td>文档相关文件</td>
+</tr>
+<tr>
+<td>tensorflow/examples</td>
+<td>例子相关代码</td>
+</tr>
+<tr>
+<td>tensorflow/g3doc</td>
+<td>TF文档</td>
+</tr>
+<tr>
+<td>tensorflow/go</td>
+<td>go API相关代码</td>
+</tr>
+<tr>
+<td>tensorflow/java</td>
+<td>java API相关代码</td>
+</tr>
+<tr>
+<td>tensorflow/python</td>
+<td>Python API相关代码</td>
+</tr>
+<tr>
+<td>tensorflow/stream_executor</td>
+<td>并行计算框架代码</td>
+</tr>
+<tr>
+<td>tensorflow/tools</td>
+<td>各种辅助工具工程代码，例如第二章中生成Python安装包的代码就在这里</td>
+</tr>
+<tr>
+<td>tensorflow/user_ops    tf</td>
+<td>插件代码</td>
+</tr>
+<tr>
+<td>third_party/</td>
+<td>依赖的第三方代码</td>
+</tr>
+<tr>
+<td>tools</td>
+<td>工程编译配置相关</td>
+</tr>
+<tr>
+<td>util</td>
+<td>工程编译相关</td>
+</tr>
+</tbody></table>
+<h3 id="其中tensorflow-core是tf的核心模块"><a href="#其中tensorflow-core是tf的核心模块" class="headerlink" title="其中tensorflow/core是tf的核心模块"></a>其中tensorflow/core是tf的核心模块</h3><p><img src="https://github.com/dongbeiyewu/xla/raw/master/week5/pic/2.png"></p>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>tensorflow/core/common_runtime</td>
+<td>公共运行库</td>
+</tr>
+<tr>
+<td>tensorflow/core/debug</td>
+<td>调试相关</td>
+</tr>
+<tr>
+<td>tensorflow/core/distributed_runtime</td>
+<td>分布式执行模块</td>
+</tr>
+<tr>
+<td>tensorflow/core/example</td>
+<td>例子代码</td>
+</tr>
+<tr>
+<td>tensorflow/core/framework</td>
+<td>基础功能模块</td>
+</tr>
+<tr>
+<td>tensorflow/core/graph</td>
+<td>计算图相关</td>
+</tr>
+<tr>
+<td>tensorflow/core/grappler</td>
+<td>模型优化模块</td>
+</tr>
+<tr>
+<td>tensorflow/core/kernels</td>
+<td>操作核心的实现代码，包括CPU和GPU上的实现</td>
+</tr>
+<tr>
+<td>tensorflow/core/lib</td>
+<td>公共基础库</td>
+</tr>
+<tr>
+<td>tensorflow/core/ops</td>
+<td>操作代码</td>
+</tr>
+<tr>
+<td>tensorflow/core/platform</td>
+<td>平台实现相关代码</td>
+</tr>
+<tr>
+<td>tensorflow/core/protobuf</td>
+<td>.proto定义文件</td>
+</tr>
+<tr>
+<td>tensorflow/core/public</td>
+<td>API头文件</td>
+</tr>
+<tr>
+<td>tensorflow/core/user_ops</td>
+<td></td>
+</tr>
+<tr>
+<td>tensorflow/core/util</td>
+<td></td>
+</tr>
+</tbody></table>
+
+      <p class="copyright"><strong>Links: <a href="http://example.com/2020/12/10/week5/%E6%BA%90%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84/">http://example.com/2020/12/10/week5/%E6%BA%90%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84/</a></strong></p>
+  </article>
+  <div id="comment">
+    
+    <div id="disqus_thread"></div>
+    <script>
+      var disqus_config = function() {
+        this.page.url = "http://example.com/2020/12/10/week5/%E6%BA%90%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84/"; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = "ckiimrpj8000mp0uzgq248u8w"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+      };
+  
+      (function() {
+        var d = document,
+          s = d.createElement("script");
+        s.src = "https://iometa.disqus.com/embed.js";
+        s.setAttribute("data-timestamp", +new Date());
+        (d.head || d.body).appendChild(s);
+      })();
+    </script>
+    
+</div>
+</div>
+        </div>
+    </div>
+    
+<footer id="footer">
+    <div class="content has-text-centered">
+        <p>
+            © 2020 <a href="http://example.com">孙启明</a>.
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>.
+            Theme <a target="_blank" rel="noopener" href="https://github.com/songquanpeng/hexo-theme-lightx">lightx</a>.
+            
+        </p>
+    </div>
+</footer>
+  </div>
+  
+    <script id="dsq-count-scr" src="//iometa.disqus.com/count.js" async></script>
+  
+  
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@latest/build/highlight.min.js"></script>
+  <script>
+    hljs.initHighlightingOnLoad();
+  </script>
+  </body>
+</html>

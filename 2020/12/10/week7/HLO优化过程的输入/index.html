@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title> | 孙启明的blog</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.1.1/styles/solarized-light.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+    <link rel="stylesheet" href="/custom.css"/>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/icon512.png">
+    <meta name="theme-color" content="#ffffff"/>
+    
+  <meta name="generator" content="Hexo 5.2.0"></head>
+  <body>
+    <script>
+      if ('serviceWorker' in navigator && false) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('/sw.js', {scope: '/'})
+            .then(function (registration) {
+              // console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            })
+            .catch(function (err) {
+              console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+      }
+    </script>
+  <div id="page-container">
+    <nav class="navbar nav-shadow" role="navigation" aria-label="main navigation">
+  <div class="container">
+      <div class="navbar-brand">
+          <a class="navbar-item" href="/">
+              <img src="/icon192.png" height="50">
+          </a>
+          <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+             data-target="mainNavbar">
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+          </a>
+      </div>
+      <div id="mainNavbar" class="navbar-menu">
+          <div class="navbar-start">
+              <a class="navbar-item" href="/"> 孙启明的blog </a>
+              <a class="navbar-item" href="/archives"> Archives </a>
+              <a class="navbar-item" href="/about"> About </a>
+          </div>
+      </div>
+  </div>
+</nav>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+  if ($navbarBurgers.length > 0) {
+    $navbarBurgers.forEach( el => {
+      el.addEventListener('click', () => {
+        const target = el.dataset.target;
+        const $target = document.getElementById(target);
+        el.classList.toggle('is-active');
+        $target.classList.toggle('is-active');
+      });
+    });
+  }
+});
+</script>
+    <div id="content-wrap">
+        <div class="container">
+          <div class="article-container">
+  <h1 class="title is-3 is-4-mobile"></h1>
+  <article>
+      <div class="contents">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#HLO-gt-llvm%E4%BC%98%E5%8C%96%E8%BF%87%E7%A8%8B"><span class="toc-text">HLO-&gt;llvm优化过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#hlo-module%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="toc-text">hlo module的概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#module%E4%BE%8B%E5%AD%90"><span class="toc-text">module例子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#high-level-optimize"><span class="toc-text">high level optimize</span></a></li></ol>
+      </div>
+      <h2 id="HLO-gt-llvm优化过程"><a href="#HLO-gt-llvm优化过程" class="headerlink" title="HLO-&gt;llvm优化过程"></a>HLO-&gt;llvm优化过程</h2><p>经过tf2xla后，得到的是一个hlo的图<br>以xla.CpuComiler为例<br>xla.CpuComiler的输入是xla.HloModule，首先会调用RunHloPasses创建HloPassPipeline，添加并运行一系列的HloPass.</p>
+<h2 id="hlo-module的概念"><a href="#hlo-module的概念" class="headerlink" title="hlo module的概念"></a>hlo module的概念</h2><ul>
+<li>hlo module用源码注释的解释，就是一个编译单元，相当于是一个完整可运行的程序。</li>
+<li>一个程序，就有入口函数，也就是 entry_computation，每个module都有且仅有一个entry_computation，相当于main函数，有输入和输出，输入可以是多个参数，但输出只有一个（root instruction的值），如果要返回多个值，需要把多个值构造成一个元组（tuple）返回。</li>
+<li>一个module可以包含多个computation，除了entry_computation，其他的都是”nested”，也就是被调用。</li>
+<li>HLO instructions就是op了，对应了官网上列出的operation semantics，看注释已经解释的非常清楚了，op融合和向llvm ir转换都是在这个层面进行的。<h2 id="module例子"><a href="#module例子" class="headerlink" title="module例子"></a>module例子</h2>hlo.proto里的一个例子<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ENTRY main &#123;</span><br><span class="line">     a &#x3D; f32[] parameter(0)</span><br><span class="line">     b &#x3D; f32[10] parameter(1)</span><br><span class="line">     ROOT root &#x3D; (f32[], f32[10]) tuple(%a, %b)</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+一个简单的直接返回输入的图，用hlo表达就是上面这个样子，有输入参数，有root指令，有entry_computation，然后这整个就是一个module</li>
+</ul>
+<p>tf2xla目录是调用了xla目录里的函数，xla目录内的结构本身又是client/service结构的，service是真正的定义和调用发生处，client是对service的封装，xla_builder就在client内。而hlo的定义都在service内</p>
+<p>tf2xla中还可以看到两个概念：xla_expression和xla_resource</p>
+<ul>
+<li>xla_expression 可以表示常量、符号值、变量和列表。</li>
+<li>xla_resource 表示hlo中的变量，需要嵌套computation的时候，表示被嵌套computation的输出，被其他computation引用。</li>
+</ul>
+<h2 id="high-level-optimize"><a href="#high-level-optimize" class="headerlink" title="high level optimize"></a>high level optimize</h2><p>通过xla的client（compile_onlyclient）最终调用到cpu_compiler或gpu_compiler。</p>
+<p>如何做优化，结构很简单，就是通过一个pipeline（HloPassPipeline）把所有的pass串起来。</p>
+<p>完成了各种pass优化和变换后，就是hlo_dataflow_analysis，最后是buffer_assignment。</p>
+<p>所以整个流程就是</p>
+<p>graph compile -&gt; hlo graph build -&gt; hlo pass pipelime -&gt; hlo dataflow analysis -&gt; codegen</p>
+
+      <p class="copyright"><strong>Links: <a href="http://example.com/2020/12/10/week7/HLO%E4%BC%98%E5%8C%96%E8%BF%87%E7%A8%8B%E7%9A%84%E8%BE%93%E5%85%A5/">http://example.com/2020/12/10/week7/HLO%E4%BC%98%E5%8C%96%E8%BF%87%E7%A8%8B%E7%9A%84%E8%BE%93%E5%85%A5/</a></strong></p>
+  </article>
+  <div id="comment">
+    
+    <div id="disqus_thread"></div>
+    <script>
+      var disqus_config = function() {
+        this.page.url = "http://example.com/2020/12/10/week7/HLO%E4%BC%98%E5%8C%96%E8%BF%87%E7%A8%8B%E7%9A%84%E8%BE%93%E5%85%A5/"; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = "ckiimrpja000pp0uzgnzcgb70"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+      };
+  
+      (function() {
+        var d = document,
+          s = d.createElement("script");
+        s.src = "https://iometa.disqus.com/embed.js";
+        s.setAttribute("data-timestamp", +new Date());
+        (d.head || d.body).appendChild(s);
+      })();
+    </script>
+    
+</div>
+</div>
+        </div>
+    </div>
+    
+<footer id="footer">
+    <div class="content has-text-centered">
+        <p>
+            © 2020 <a href="http://example.com">孙启明</a>.
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>.
+            Theme <a target="_blank" rel="noopener" href="https://github.com/songquanpeng/hexo-theme-lightx">lightx</a>.
+            
+        </p>
+    </div>
+</footer>
+  </div>
+  
+    <script id="dsq-count-scr" src="//iometa.disqus.com/count.js" async></script>
+  
+  
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@latest/build/highlight.min.js"></script>
+  <script>
+    hljs.initHighlightingOnLoad();
+  </script>
+  </body>
+</html>

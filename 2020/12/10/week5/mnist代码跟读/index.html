@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title> | 孙启明的blog</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.1.1/styles/solarized-light.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+    <link rel="stylesheet" href="/custom.css"/>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/icon512.png">
+    <meta name="theme-color" content="#ffffff"/>
+    
+  <meta name="generator" content="Hexo 5.2.0"></head>
+  <body>
+    <script>
+      if ('serviceWorker' in navigator && false) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('/sw.js', {scope: '/'})
+            .then(function (registration) {
+              // console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            })
+            .catch(function (err) {
+              console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+      }
+    </script>
+  <div id="page-container">
+    <nav class="navbar nav-shadow" role="navigation" aria-label="main navigation">
+  <div class="container">
+      <div class="navbar-brand">
+          <a class="navbar-item" href="/">
+              <img src="/icon192.png" height="50">
+          </a>
+          <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+             data-target="mainNavbar">
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+          </a>
+      </div>
+      <div id="mainNavbar" class="navbar-menu">
+          <div class="navbar-start">
+              <a class="navbar-item" href="/"> 孙启明的blog </a>
+              <a class="navbar-item" href="/archives"> Archives </a>
+              <a class="navbar-item" href="/about"> About </a>
+          </div>
+      </div>
+  </div>
+</nav>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+  if ($navbarBurgers.length > 0) {
+    $navbarBurgers.forEach( el => {
+      el.addEventListener('click', () => {
+        const target = el.dataset.target;
+        const $target = document.getElementById(target);
+        el.classList.toggle('is-active');
+        $target.classList.toggle('is-active');
+      });
+    });
+  }
+});
+</script>
+    <div id="content-wrap">
+        <div class="container">
+          <div class="article-container">
+  <h1 class="title is-3 is-4-mobile"></h1>
+  <article>
+      <div class="contents">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#MNIST%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="toc-text">MNIST数据集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-input-data-%E6%A8%A1%E5%9D%97%E4%B8%AD%E7%9A%84-read-data-sets-%E5%87%BD%E6%95%B0%E5%8A%A0%E8%BD%BD-mnist-%E6%95%B0%E6%8D%AE%E9%9B%86%EF%BC%9A"><span class="toc-text">使用 input_data 模块中的 read_data_sets() 函数加载 mnist 数据集：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%80%9CMnist-%E6%95%B0%E6%8D%AE%E9%9B%86%E6%89%8B%E5%86%99%E6%95%B0%E5%AD%97%E8%AF%86%E5%88%AB%E2%80%9D%E7%9A%84%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0%EF%BC%9A"><span class="toc-text">“Mnist 数据集手写数字识别”的常用函数：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BF%9D%E5%AD%98"><span class="toc-text">神经网络模型的保存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8A%A0%E8%BD%BD"><span class="toc-text">神经网络模型的加载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B%E5%87%86%E7%A1%AE%E7%8E%87%E8%AF%84%E4%BC%B0%E6%96%B9%E6%B3%95"><span class="toc-text">神经网络模型准确率评估方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E5%90%91%E4%BC%A0%E6%92%AD%E8%BF%87%E7%A8%8B-forward-py"><span class="toc-text">前向传播过程(forward.py)</span></a></li></ol>
+      </div>
+      <h2 id="MNIST数据集"><a href="#MNIST数据集" class="headerlink" title="MNIST数据集"></a>MNIST数据集</h2><p>mnist 数据集： 包含 7 万张黑底白字手写数字图片，其中 55000 张为训练集， 5000 张为验证集，10000 张为测试集。</p>
+<p>每张图片大小为 <code>28*28 </code>像素，图片中纯黑色像素值为<code> 0</code>，纯白色像素值为<code> 1</code>。<br>数据集的标签是长度为<code>10</code>的一维数组，数组中每个元素索引号表示对应数字出现的概率。</p>
+<p>在将 <code>mnist</code> 数据集作为输入喂入神经网络时，需先将数据集中每张图片变为长度 <code>784</code> 一维数组，将该数组作为神经网络输入特征喂入神经网络。</p>
+<p>【例如】：<br>一张数字手写体图片变成长度为 <code>784 </code>的一维数组<code>[0. 0. 0. 0. 0.231 0.235 0.459 ... 0.219 0. 0. 0. 0.]</code>输入神经网络。<br>该图片对应的标签为<code> [0. 0. 0. 0. 0. 0. 1. 0. 0. 0]</code>，标签中索引号为 6 的元素为 1，表示是数字 6 出现的概率为<code> 100%</code>，则该图片对应的识别结果是 6。</p>
+<h2 id="使用-input-data-模块中的-read-data-sets-函数加载-mnist-数据集："><a href="#使用-input-data-模块中的-read-data-sets-函数加载-mnist-数据集：" class="headerlink" title="使用 input_data 模块中的 read_data_sets() 函数加载 mnist 数据集："></a>使用 input_data 模块中的 read_data_sets() 函数加载 mnist 数据集：</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> tensorflow.examples.tutorials.mnist <span class="keyword">import</span> input_data </span><br><span class="line">mnist = input_data.read_data_sets(<span class="string">&#x27;./data/&#x27;</span>,one_hot=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+<p>在 read_data_sets() 函数中有两个参数，第一个参数表示数据集存放路径，第二个参数表示数据集的存取形式。</p>
+<p>当第二个参数为 Ture 时，表示以独热码形式存取数据集。</p>
+<p>read_data_sets() 函数运行时，会检查指定路径内是否已经有数据集，<br>若指定路径中没有数据集，则自动下载，并将 mnist 数据集分为训练集 train、验证集 validation 和测试集 test 存放。在终端显示如下内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Extracting .&#x2F;data&#x2F;train-images-idx3-ubyte.gz </span><br><span class="line">Extracting .&#x2F;data&#x2F;train-labels-idx1-ubyte.gz</span><br><span class="line">Extracting .&#x2F;data&#x2F;tl0k-images-idx3-ubyte.gz </span><br><span class="line">Extracting .&#x2F;data&#x2F; tl0k-labels-idx1-ubyte.gz</span><br></pre></td></tr></table></figure>
+
+<p>使用 train.labels 函数返回 mnist 数据集标签</p>
+<p>在 mnist 数据集中，若想要查看训练集中第 0 张图片的标签，则使用如下函数<code> mnist.train.labels[0]</code><br>输出结果：<code>array([0.,0.,0.,0.,0.,0.,1.,0.,0.,0])</code></p>
+<p>使用 train.images 函数返回 mnist 数据集图片像素值</p>
+<p>在 mnist 数据集中，若想要查看训练集中第 0 张图片像素值，则使用如下函数 <code>mnist.train.images[0]</code><br>输出结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">array([0. ,0. ,0. ,</span><br><span class="line">       1. ,0. ,0. ,</span><br><span class="line">       2. ,0. ,0. ,</span><br><span class="line">       …   …   …])</span><br></pre></td></tr></table></figure>
+<p>使用 mnist.train.next_batch()函数将数据输入神经网络</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">BATCH_SIZE = <span class="number">200</span></span><br><span class="line">xs,ys = mnist.train.next_batch(BATCH_SIZE)</span><br><span class="line"><span class="built_in">print</span> <span class="string">&quot;xs shape:&quot;</span>,xs.shape </span><br><span class="line"><span class="built_in">print</span> <span class="string">&quot;ys shape:&quot;</span>,ys.shape </span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输出结果：xs.shape(200,784)</span><br><span class="line">输出结果：ys.shape(200,10)</span><br></pre></td></tr></table></figure>
+<p>其中，<code>mnist.train.next_batch() </code>函数包含一个参数 <code>BATCH_SIZE</code>，表示随机从训练集中抽取 <code>BATCH_SIZE</code> 个样本输入神经网络，并将样本的像素值和标签分别赋给 <code>xs</code> 和 <code>ys</code>。</p>
+<p>在本例中，<code>BATCH_SIZE</code>设置为 200，表示一次将 200 个样本的像素值和标签分别赋值给 <code>xs</code> 和 <code>ys</code>，故 <code>xs </code>的形状为(200,784)，对应的 <code>ys </code>的形状为 (200,10)。</p>
+<h2 id="“Mnist-数据集手写数字识别”的常用函数："><a href="#“Mnist-数据集手写数字识别”的常用函数：" class="headerlink" title="“Mnist 数据集手写数字识别”的常用函数："></a>“Mnist 数据集手写数字识别”的常用函数：</h2><ul>
+<li><code>tf.get_collection(&quot; &quot;) </code>函数表示从<code>collection</code> 集合中取出全部变量生成一个列表。</li>
+</ul>
+<p>+v tf.add( ) 函数表示将参数列表中对应元素相加。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">x&#x3D;tf.constant([[1,2],[1,2]])</span><br><span class="line">y&#x3D;tf.constant([[1,1],[1,2]]) </span><br><span class="line">z&#x3D;tf.add(x,y)</span><br><span class="line">print z</span><br></pre></td></tr></table></figure>
+<p>输出结果：<code> [[2,3],[2,4]]</code></p>
+<p>③ tf.cast(x,dtype) 函数表示将参数 x 转换为指定数据类型。<br>【例如】：</p>
+<p>A = tf.convert_to_tensor(np.array([[1,1,2,4], [3,4,8,5]])) print A.dtype<br>b = tf.cast(A, tf.float32) print b.dtype<br>结果输出：</p>
+<p>&lt;dtype: ‘int64’&gt;<br>&lt;dtype: ‘float32’&gt;<br>从输出结果看出，将矩阵 A 由整数型变为 32 位浮点型。</p>
+<p>④ tf.equal( ) 函数表示对比两个矩阵或者向量的元素。<br>若对应元素相等，则返回 True；若对应元素不相等，则返回 False。<br>【例如】：</p>
+<p>A = [[1,3,4,5,6]]<br>B = [[1,3,4,3,2]]</p>
+<p>with tf.Session( ) as sess:<br>    print(sess.run(tf.equal(A, B)))<br>输出结果：[[ True True True False False]]</p>
+<p>在矩阵 A 和 B 中，第 1、2、3 个元素相等，第 4、5 个元素不等，故输出结果中，第 1、2、3 个元素取值为 True，第 4、5 个元素取值为 False。</p>
+<ul>
+<li><code>tf.reduce_mean(x,axis)</code> 函数表示求取矩阵或张量指定维度的平均值。</li>
+<li>若不指定第二个参数，则在所有元素中取平均值；</li>
+</ul>
+<p>若指定第二个参数为 0，则在第一维元素上取平均值，即每一列求平均值；</p>
+<p>若指定第二个参数为 1，则在第二维元素上取平均值，即每一行求平均值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">x &#x3D; [[1., 1.]</span><br><span class="line">    [2., 2.]]</span><br><span class="line">print(tf.reduce_mean(x))</span><br></pre></td></tr></table></figure>
+<p>输出结果：<code>1.5</code></p>
+<p><code>print(tf.reduce_mean(x, 0))</code></p>
+<p>输出结果：<code>[1.5, 1.5]</code></p>
+<p><code>print(tf.reduce_mean(x, 1))</code></p>
+<p>输出结果：<code>[1., 1.]</code></p>
+<ul>
+<li><code>tf.argmax(x,axis)</code> 函数表示返回指定维度 <code>axis</code> 下，参数 <code>x </code>中最大值索引号。</li>
+</ul>
+<p>在 <code>tf.argmax([1,0,0],1)</code> 函数中，<code>axis</code> 为 1，参数 <code>x</code> 为 <code>[1,0,0]</code>，表示在参数 x的第一个维度取最大值对应的索引号，故返回 0。</p>
+<ul>
+<li><code>os.path.join()</code> 函数表示把参数字符串按照路径命名规则拼接。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import os</span><br><span class="line">os.path.join(&#39;&#x2F;hello&#x2F;&#39;,&#39;good&#x2F;boy&#x2F;&#39;,&#39;doiido&#39;)</span><br></pre></td></tr></table></figure>
+<p>输出结果：<code>&#39;/hello/good/boy/doiido&#39;</code></p>
+<ul>
+<li>字符串<code>.split( ) </code>函数表示按照指定”拆分符”对字符串拆分，返回拆分列表。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#39;.&#x2F;model&#x2F;mnist_model-1001&#39;.split(&#39;&#x2F;&#39;)[-1].split(&#39;-&#39;)[-1]</span><br></pre></td></tr></table></figure>
+<p>在该例子中，共进行两次拆分。<br>第一个拆分符为 /，返回拆分列表，并提取 列表中索引为 -1 的元素即倒数第一个元素；</p>
+<p>第二个拆分符为 -，返回拆分列表，并提取列表中索引为 -1 的元素即倒数第一个元素，故函数返回值为 1001。</p>
+<ul>
+<li><code>tf.Graph( ).as_default( )</code> 函数表示将当前图设置成为默认图，并返回一个上下文管理器。该函数一般与 <code>with</code> 关键字搭配使用，应用于将已经定义好的神经网络在计算图中复现。</li>
+</ul>
+<p><code>with tf.Graph().as_default() as g</code>，表示将在 <code>Graph()</code> 内定义的节点加入到计算图 g 中。</p>
+<h2 id="神经网络模型的保存"><a href="#神经网络模型的保存" class="headerlink" title="神经网络模型的保存"></a>神经网络模型的保存</h2><p>在反向传播过程中，一般会间隔一定轮数保存一次神经网络模型，并产生三个文件<br>(保存当前图结构的 <code>.meta </code>文件、保存当前参数名的 <code>.index </code>文件、保存当前参数的 <code>.data </code>文件)，<br>在 Tensorflow 中如下表示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">saver = tf.train.Saver() </span><br><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(STEPS):</span><br><span class="line">        <span class="keyword">if</span> i % 轮 数 == <span class="number">0</span>:</span><br><span class="line">            saver.save(</span><br><span class="line">                sess, </span><br><span class="line">                os.path.join(MODEL_SAVE_PATH, MODEL_NAME), </span><br><span class="line">                global_step=global_step</span><br><span class="line">            )</span><br></pre></td></tr></table></figure>
+<p>其中，<code>tf.train.Saver() </code>用来实例化<code> saver</code> 对象。上述代码表示，神经网络每循环规定的轮数，将神经网络模型中所有的参数等信息保存到指定的路径中，并在存放网络模型的文件夹名称中注明保存模型时的训练轮数。</p>
+<h2 id="神经网络模型的加载"><a href="#神经网络模型的加载" class="headerlink" title="神经网络模型的加载"></a>神经网络模型的加载</h2><p>在测试网络效果时，需要将训练好的神经网络模型加载， 在 Tensorflow 中这样表示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">    ckpt = tf.train.get_checkpoint_state(存储路径)</span><br><span class="line">    <span class="keyword">if</span> ckpt <span class="keyword">and</span> ckpt.model_checkpoint_path:</span><br><span class="line">        saver.restore(sess, ckpt.model_checkpoint_path)</span><br></pre></td></tr></table></figure>
+
+<p>在 with 结构中进行加载保存的神经网络模型，若 ckpt 和保存的模型在指定路径中存在，则将保存的神经网络模型加载到当前会话中。</p>
+<h2 id="神经网络模型准确率评估方法"><a href="#神经网络模型准确率评估方法" class="headerlink" title="神经网络模型准确率评估方法"></a>神经网络模型准确率评估方法</h2><p>在网络评估时，一般通过计算在一组数据上的识别准确率，评估神经网络的效果。 在 Tensorflow 中这样表示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">correct_prediction &#x3D; tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1)) </span><br><span class="line">accuracy &#x3D; tf.reduce_mean(tf.cast(correct_prediction, tf.float32)) </span><br></pre></td></tr></table></figure>
+<p>在上述中，y 表示在一组数据(即 <code>batch_size </code>个数据)上神经网络模型的预测结果，y 的形状为 <code>[batch_size,10]</code>，每一行表示一张图片的识别结果。</p>
+<p>通过 <code>tf.argmax()</code> 函数取出每张图片对应向量中最大值元素对应的索引值，组成长度为输入数据 <code>batch_size </code>个的一维数组。</p>
+<p>通过 <code>tf.equal()</code> 函数判断预测结果张量和实际标签张量的每个维度是否相等，若相等则返回 True，不相等则返回 False。</p>
+<p>通过 <code>tf.cast() </code>函数将得到的布尔型数值转化为实数型，</p>
+<p>再通过<code>tf.reduce_mean()</code> 函数求平均值，最终得到神经网络模型在本组数据上的准确率。</p>
+<h2 id="前向传播过程-forward-py"><a href="#前向传播过程-forward-py" class="headerlink" title="前向传播过程(forward.py)"></a>前向传播过程(forward.py)</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">x, regularizer</span>):</span></span><br><span class="line">    w=</span><br><span class="line">    b= </span><br><span class="line">    y=</span><br><span class="line">    <span class="keyword">return</span> y</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_weight</span>(<span class="params">shape, regularizer</span>):</span> </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_bias</span>(<span class="params">shape</span>):</span></span><br></pre></td></tr></table></figure>
+
+<p>前向传播过程中，需要定义神经网络中的参数 w 和偏置 b，定义由输入到输出的网络结构。<br>通过定义函数<code> get_weight()</code> 实现对参数 w 的设置，包括参数 w 的形状和是否正则化的标志。同样，通过定义函数 <code>get_bias()</code> 实现对偏置 b 的设置。</p>
+<p>反向传播过程(backword.py)</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">backward</span>(<span class="params"> mnist </span>):</span></span><br><span class="line">    x  = tf.placeholder(dtype, shape )</span><br><span class="line">    y_ = tf.placeholder(dtype, shape )</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 定义前向传播函数</span></span><br><span class="line">    y = forward( ) </span><br><span class="line">    global_step =</span><br><span class="line">    loss =</span><br><span class="line"></span><br><span class="line">    train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 实例化 saver 对象</span></span><br><span class="line">    saver = tf.train.Saver() </span><br><span class="line">    <span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">        <span class="comment"># 初始化所有模型参数</span></span><br><span class="line">        tf.initialize_all_variables().run()</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 训练模型</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(STEPS):</span><br><span class="line">            sess.run(train_step, feed_dict=&#123;x: , y_: &#125;)</span><br><span class="line">            <span class="keyword">if</span> i % 轮数 == <span class="number">0</span>:</span><br><span class="line">                <span class="built_in">print</span></span><br><span class="line">                saver.save( )</span><br></pre></td></tr></table></figure>
+
+
+<p>反向传播过程中， 用 <code>tf.placeholder(dtype, shape)</code> 函数实现训练样本 x 和样本标签 y_占位，</p>
+<p>函数参数 <code>dtype</code> 表示数据的类型，<code>shape</code> 表示数据的形状；<br>y 表示定义的前向传播函数 <code>forward</code>；</p>
+<p><code>loss</code> 表示定义的损失函数，一般为预测值与样本标签的交叉熵(或均方误差)与正则化损失之和；<br><code>train_step</code> 表示利用优化算法对模型参数进行优化 常用优化算法 <code>GradientDescentOptimizer</code>、<code>AdamOptimizer</code>、<code>MomentumOptimizer</code> 算法， 在上述代码中使用的 <code>GradientDescentOptimizer </code>优化算法。</p>
+<p>接着实例化 <code>saver</code> 对象， 其中利用 <code>tf.initialize_all_variables().run()</code> 函数实例化所有参数模型， 利用 <code>sess.run( ) </code>函数实现模型的训练优化过程，并每间隔一定轮数保存一次模型。</p>
+
+      <p class="copyright"><strong>Links: <a href="http://example.com/2020/12/10/week5/mnist%E4%BB%A3%E7%A0%81%E8%B7%9F%E8%AF%BB/">http://example.com/2020/12/10/week5/mnist%E4%BB%A3%E7%A0%81%E8%B7%9F%E8%AF%BB/</a></strong></p>
+  </article>
+  <div id="comment">
+    
+    <div id="disqus_thread"></div>
+    <script>
+      var disqus_config = function() {
+        this.page.url = "http://example.com/2020/12/10/week5/mnist%E4%BB%A3%E7%A0%81%E8%B7%9F%E8%AF%BB/"; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = "ckiimrpj6000kp0uz4thh3p4c"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+      };
+  
+      (function() {
+        var d = document,
+          s = d.createElement("script");
+        s.src = "https://iometa.disqus.com/embed.js";
+        s.setAttribute("data-timestamp", +new Date());
+        (d.head || d.body).appendChild(s);
+      })();
+    </script>
+    
+</div>
+</div>
+        </div>
+    </div>
+    
+<footer id="footer">
+    <div class="content has-text-centered">
+        <p>
+            © 2020 <a href="http://example.com">孙启明</a>.
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>.
+            Theme <a target="_blank" rel="noopener" href="https://github.com/songquanpeng/hexo-theme-lightx">lightx</a>.
+            
+        </p>
+    </div>
+</footer>
+  </div>
+  
+    <script id="dsq-count-scr" src="//iometa.disqus.com/count.js" async></script>
+  
+  
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@latest/build/highlight.min.js"></script>
+  <script>
+    hljs.initHighlightingOnLoad();
+  </script>
+  </body>
+</html>

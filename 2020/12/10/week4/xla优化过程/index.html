@@ -1,0 +1,140 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title> | 孙启明的blog</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.1.1/styles/solarized-light.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+    <link rel="stylesheet" href="/custom.css"/>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/icon512.png">
+    <meta name="theme-color" content="#ffffff"/>
+    
+  <meta name="generator" content="Hexo 5.2.0"></head>
+  <body>
+    <script>
+      if ('serviceWorker' in navigator && false) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('/sw.js', {scope: '/'})
+            .then(function (registration) {
+              // console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            })
+            .catch(function (err) {
+              console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+      }
+    </script>
+  <div id="page-container">
+    <nav class="navbar nav-shadow" role="navigation" aria-label="main navigation">
+  <div class="container">
+      <div class="navbar-brand">
+          <a class="navbar-item" href="/">
+              <img src="/icon192.png" height="50">
+          </a>
+          <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+             data-target="mainNavbar">
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+          </a>
+      </div>
+      <div id="mainNavbar" class="navbar-menu">
+          <div class="navbar-start">
+              <a class="navbar-item" href="/"> 孙启明的blog </a>
+              <a class="navbar-item" href="/archives"> Archives </a>
+              <a class="navbar-item" href="/about"> About </a>
+          </div>
+      </div>
+  </div>
+</nav>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+  if ($navbarBurgers.length > 0) {
+    $navbarBurgers.forEach( el => {
+      el.addEventListener('click', () => {
+        const target = el.dataset.target;
+        const $target = document.getElementById(target);
+        el.classList.toggle('is-active');
+        $target.classList.toggle('is-active');
+      });
+    });
+  }
+});
+</script>
+    <div id="content-wrap">
+        <div class="container">
+          <div class="article-container">
+  <h1 class="title is-3 is-4-mobile"></h1>
+  <article>
+      <div class="contents">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#xla%E4%BC%98%E5%8C%96%E8%BF%87%E7%A8%8B"><span class="toc-text">xla优化过程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#simplification"><span class="toc-text">simplification</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Batch-Normalization%EF%BC%88%E6%B7%BB%E5%8A%A0BN%E5%B1%82%EF%BC%89"><span class="toc-text">Batch Normalization（添加BN层）</span></a></li></ol></li></ol></li></ol>
+      </div>
+      <h1 id="xla优化过程"><a href="#xla优化过程" class="headerlink" title="xla优化过程"></a>xla优化过程</h1><h2 id="simplification"><a href="#simplification" class="headerlink" title="simplification"></a>simplification</h2><h3 id="Batch-Normalization（添加BN层）"><a href="#Batch-Normalization（添加BN层）" class="headerlink" title="Batch Normalization（添加BN层）"></a>Batch Normalization（添加BN层）</h3><p>深度网络参数训练时内部存在协方差偏移（Internal Covariate Shift）现象：深度网络内部数据分布在训练过程中发生变化的现象。</p>
+<p>训练深度网络时，神经网络隐层参数更新会导致网络输出层输出数据的分布发生变化，而且随着层数的增加，根据链式规则，这种偏移现象会逐渐被放大。这对于网络参数学习来说是个问题：因为神经网络本质学习的就是数据分布（representation learning），如果数据分布变化了，神经网络又不得不学习新的分布。为保证网络参数训练的稳定性和收敛性，往往需要选择比较小的学习速率（learning rate），同时参数初始化的好坏也明显影响训练出的模型精度，特别是在训练具有饱和非线性（死区特性）的网络，比如即采用S或双S激活函数网络，比如LSTM，GRU。</p>
+<p>解决办法：引入Batch Normalization，作为深度网络模型的一个层，每次先对input数据进行归一化，再送入神经网络输入层。</p>
+<p>Batch normalization解决的问题：<br>解决的问题是梯度消失与梯度爆炸。<br>关于梯度消失，以sigmoid函数为例子，sigmoid函数使得输出在[0,1]之间。</p>
+<p><img src="https://github.com/dongbeiyewu/xla/raw/master/week4/pic/1.png" alt="1"></p>
+<p>事实上x到了一定大小，经过sigmoid函数的输出范围就很小了，参考下图</p>
+<p><img src="https://github.com/dongbeiyewu/xla/raw/master/week4/pic/2.png" alt="1"></p>
+<p>如果输入很大，其对应的斜率就很小，我们知道，其斜率（梯度）在反向传播中是权值学习速率。所以就会出现如下的问题</p>
+<p><img src="https://github.com/dongbeiyewu/xla/raw/master/week4/pic/3.png" alt="1"></p>
+<p>在深度网络中，如果网络的激活输出很大，其梯度就很小，学习速率就很慢。假设每层学习梯度都小于最大值0.25，网络有n层，因为链式求导的原因，第一层的梯度小于0.25的n次方，所以学习速率就慢，对于最后一层只需对自身求导1次，梯度就大，学习速率就快。</p>
+<p>这会造成的影响是在一个很大的深度网络中，浅层基本不学习，权值变化小，后面几层一直在学习，结果就是，后面几层基本可以表示整个网络，失去了深度的意义。</p>
+<p>关于梯度爆炸，根据链式求导法，<br>第一层偏移量的梯度=激活层斜率1x权值1x激活层斜率2x…激活层斜率(n-1)x权值(n-1)x激活层斜率n<br>假如激活层斜率均为最大值0.25，所有层的权值为100，这样梯度就会指数增加。</p>
+<p>对每个特征进行独立的normalization。<br>第j个维度，传入m个训练样本</p>
+<p><img src="https://github.com/dongbeiyewu/xla/raw/master/week4/pic/4.png" alt="1"></p>
+<p>仅仅使用上面的归一化公式，对网络某一层A的输出数据做归一化，然后送入网络下一层B，这样是会影响到本层网络A所学习到的特征的<br>引入了可学习参数γ、β</p>
+<p><img src="https://github.com/dongbeiyewu/xla/raw/master/week4/pic/7.png" alt="1"></p>
+<p>对于神经网络中的第L层</p>
+<p><img src="https://github.com/dongbeiyewu/xla/raw/master/week4/pic/8.png" alt="1"></p>
+
+      <p class="copyright"><strong>Links: <a href="http://example.com/2020/12/10/week4/xla%E4%BC%98%E5%8C%96%E8%BF%87%E7%A8%8B/">http://example.com/2020/12/10/week4/xla%E4%BC%98%E5%8C%96%E8%BF%87%E7%A8%8B/</a></strong></p>
+  </article>
+  <div id="comment">
+    
+    <div id="disqus_thread"></div>
+    <script>
+      var disqus_config = function() {
+        this.page.url = "http://example.com/2020/12/10/week4/xla%E4%BC%98%E5%8C%96%E8%BF%87%E7%A8%8B/"; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = "ckiimrpj2000ep0uz4rlyet6m"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+      };
+  
+      (function() {
+        var d = document,
+          s = d.createElement("script");
+        s.src = "https://iometa.disqus.com/embed.js";
+        s.setAttribute("data-timestamp", +new Date());
+        (d.head || d.body).appendChild(s);
+      })();
+    </script>
+    
+</div>
+</div>
+        </div>
+    </div>
+    
+<footer id="footer">
+    <div class="content has-text-centered">
+        <p>
+            © 2020 <a href="http://example.com">孙启明</a>.
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>.
+            Theme <a target="_blank" rel="noopener" href="https://github.com/songquanpeng/hexo-theme-lightx">lightx</a>.
+            
+        </p>
+    </div>
+</footer>
+  </div>
+  
+    <script id="dsq-count-scr" src="//iometa.disqus.com/count.js" async></script>
+  
+  
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@latest/build/highlight.min.js"></script>
+  <script>
+    hljs.initHighlightingOnLoad();
+  </script>
+  </body>
+</html>

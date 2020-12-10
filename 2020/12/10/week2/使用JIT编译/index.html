@@ -1,0 +1,160 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title> | 孙启明的blog</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.1.1/styles/solarized-light.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+    <link rel="stylesheet" href="/custom.css"/>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/icon512.png">
+    <meta name="theme-color" content="#ffffff"/>
+    
+  <meta name="generator" content="Hexo 5.2.0"></head>
+  <body>
+    <script>
+      if ('serviceWorker' in navigator && false) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('/sw.js', {scope: '/'})
+            .then(function (registration) {
+              // console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            })
+            .catch(function (err) {
+              console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+      }
+    </script>
+  <div id="page-container">
+    <nav class="navbar nav-shadow" role="navigation" aria-label="main navigation">
+  <div class="container">
+      <div class="navbar-brand">
+          <a class="navbar-item" href="/">
+              <img src="/icon192.png" height="50">
+          </a>
+          <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+             data-target="mainNavbar">
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+          </a>
+      </div>
+      <div id="mainNavbar" class="navbar-menu">
+          <div class="navbar-start">
+              <a class="navbar-item" href="/"> 孙启明的blog </a>
+              <a class="navbar-item" href="/archives"> Archives </a>
+              <a class="navbar-item" href="/about"> About </a>
+          </div>
+      </div>
+  </div>
+</nav>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+  if ($navbarBurgers.length > 0) {
+    $navbarBurgers.forEach( el => {
+      el.addEventListener('click', () => {
+        const target = el.dataset.target;
+        const $target = document.getElementById(target);
+        el.classList.toggle('is-active');
+        $target.classList.toggle('is-active');
+      });
+    });
+  }
+});
+</script>
+    <div id="content-wrap">
+        <div class="container">
+          <div class="article-container">
+  <h1 class="title is-3 is-4-mobile"></h1>
+  <article>
+      <div class="contents">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8JIT%E7%BC%96%E8%AF%91"><span class="toc-text">使用JIT编译</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8%E5%8D%B3%E6%97%B6%EF%BC%88JIT%EF%BC%89%E7%BC%96%E8%AF%91%EF%BC%9F"><span class="toc-text">为什么要使用即时（JIT）编译？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%9A%E8%BF%87XLA%E8%BF%90%E8%A1%8CTensorFlow%E5%9B%BE%E8%A1%A8"><span class="toc-text">通过XLA运行TensorFlow图表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%93%E5%BC%80JIT%E7%BC%96%E8%AF%91"><span class="toc-text">打开JIT编译</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Session"><span class="toc-text">Session</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%8B%E5%8A%A8"><span class="toc-text">手动</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TensorBoard%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="toc-text">TensorBoard可视化</span></a></li></ol></li></ol></li></ol>
+      </div>
+      <h1 id="使用JIT编译"><a href="#使用JIT编译" class="headerlink" title="使用JIT编译"></a>使用JIT编译</h1><h2 id="为什么要使用即时（JIT）编译？"><a href="#为什么要使用即时（JIT）编译？" class="headerlink" title="为什么要使用即时（JIT）编译？"></a>为什么要使用即时（JIT）编译？</h2><p>TensorFlow / XLA JIT编译器通过XLA编译和运行TensorFlow图形的一部分。与标准TensorFlow实现相比，这样做的好处是XLA可以将多个运算符（内核融合）融合到少量的编译内核中。与TensorFlow执行程序一样，与一次执行操作员相比，定位操作员可以减少内存带宽要求并提高性能。</p>
+<h2 id="通过XLA运行TensorFlow图表"><a href="#通过XLA运行TensorFlow图表" class="headerlink" title="通过XLA运行TensorFlow图表"></a>通过XLA运行TensorFlow图表</h2><p>有两种方法通过XLA运行TensorFlow计算，或者通过JIT编译操作员放置在CPU或GPU的设备上，或通过将操作员在<code>XLA_CPU</code>或<code>XLA_GPUTensorFlow</code>设备。将操作员直接放在TensorFlow XLA设备上强制操作员在该设备上运行，主要用于测试。</p>
+<h3 id="打开JIT编译"><a href="#打开JIT编译" class="headerlink" title="打开JIT编译"></a>打开JIT编译</h3><p>JIT编译可以在会话级别打开或手动进行选择操作。这两种方法都是零拷贝—在编译的XLA内核和置于同一设备上的TensorFlow操作符之间传递数据时，不需要复制数据。</p>
+<h3 id="Session"><a href="#Session" class="headerlink" title="Session"></a>Session</h3><p>在会话级别打开JIT编译会导致所有可能的操作符被贪婪地编译成XLA计算。每个XLA计算将被编译为一个或多个内核设备。</p>
+<p>受限于一些限制，如果图中有两个相邻的运算符都具有XLA实现，那么它们将被编译为单个XLA计算。</p>
+<p>JIT编译在会话级别打开，方法是在会话初始化期间将config 设置<code>global_jit_level</code>为<code>tf.OptimizerOptions.ON_1</code>并传递配置。</p>
+<blockquote>
+<p><code># Config to turn on JIT compilation</code><br></br><br><code>config = tf.ConfigProto()</code></br><br><code>config.graph_options.optimizer_options.global_jit_level = tf.OptimizerOptions.ON_1</code><br></br><br><code>sess = tf.Session(config=config)</code></p>
+</blockquote>
+<h3 id="手动"><a href="#手动" class="headerlink" title="手动"></a>手动</h3><p>JIT编译也可以为一个或多个操作员手动打开。这是通过标记操作符以使用属性进行编译完成的<code>_XlaCompile=true</code>。最简单的方法是通过在中<code>tf.contrib.compiler.jit.experimental_jit_scope()</code>定义的范围<code>tensorflow/contrib/compiler/jit.py</code>。用法示例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">jit_scope = tf.contrib.compiler.jit.experimental_jit_scope</span><br><span class="line">x = tf.placeholder(np.float32)</span><br><span class="line"><span class="keyword">with</span> jit_scope():</span><br><span class="line">  y = tf.add(x, x)  <span class="comment"># The &quot;add&quot; will be compiled with XLA.</span></span><br></pre></td></tr></table></figure>
+
+<p>运行<code>tensorflow/examples/tutorials/mnist</code>下的例子<code>mnist_softmax_xla.py</code></p>
+<p>其中</p>
+<blockquote>
+<p><code> mnist = input_data.read_data_sets(FLAGS.data_dir)</code></p>
+</blockquote>
+<p>下载mnist失败，将下载好的mnist数据集放在文件夹下，更改代码为</p>
+<blockquote>
+<p><code> mnist = input_data.read_data_sets(&#39;./&#39;)</code></p>
+</blockquote>
+<p>加了把计算图结构写入tensorboard文件的代码。</p>
+<blockquote>
+<p><code>writer = tf.summary.FileWriter( &#39;./train&#39;, sess.graph )   writer.close()</code></p>
+</blockquote>
+<p>运行后计算结构图已经生成</p>
+<p><img src="https://github.com/erguixieshen/XLA/raw/master/week2/picture/3.png" alt="1"></p>
+<h3 id="TensorBoard可视化"><a href="#TensorBoard可视化" class="headerlink" title="TensorBoard可视化"></a>TensorBoard可视化</h3><blockquote>
+<p><code>#运行TensorBoard，并将日志的地址指向上面程序日志输出的地址</code></br><br><code>tensorboard --logdir=train</code></p>
+</blockquote>
+<p>运行以上命令会启动一个服务，这个服务的端口默认为6006（使用–port参数可以改变启动服务的端口）。运行结果如下图：</p>
+<p><img src="https://github.com/erguixieshen/XLA/raw/master/week2/picture/4.png" alt="1"></p>
+<p>浏览器访问默认端口</p>
+<blockquote>
+<p><code>http://DESKTOP-UHLM3HL:6006/</code></p>
+</blockquote>
+<p>可以看到mnist的计算图</p>
+<p><img src="https://github.com/erguixieshen/XLA/raw/master/week2/picture/5.png" alt="1"></p>
+
+      <p class="copyright"><strong>Links: <a href="http://example.com/2020/12/10/week2/%E4%BD%BF%E7%94%A8JIT%E7%BC%96%E8%AF%91/">http://example.com/2020/12/10/week2/%E4%BD%BF%E7%94%A8JIT%E7%BC%96%E8%AF%91/</a></strong></p>
+  </article>
+  <div id="comment">
+    
+    <div id="disqus_thread"></div>
+    <script>
+      var disqus_config = function() {
+        this.page.url = "http://example.com/2020/12/10/week2/%E4%BD%BF%E7%94%A8JIT%E7%BC%96%E8%AF%91/"; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = "ckiimrpj0000bp0uzho787770"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+      };
+  
+      (function() {
+        var d = document,
+          s = d.createElement("script");
+        s.src = "https://iometa.disqus.com/embed.js";
+        s.setAttribute("data-timestamp", +new Date());
+        (d.head || d.body).appendChild(s);
+      })();
+    </script>
+    
+</div>
+</div>
+        </div>
+    </div>
+    
+<footer id="footer">
+    <div class="content has-text-centered">
+        <p>
+            © 2020 <a href="http://example.com">孙启明</a>.
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>.
+            Theme <a target="_blank" rel="noopener" href="https://github.com/songquanpeng/hexo-theme-lightx">lightx</a>.
+            
+        </p>
+    </div>
+</footer>
+  </div>
+  
+    <script id="dsq-count-scr" src="//iometa.disqus.com/count.js" async></script>
+  
+  
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@latest/build/highlight.min.js"></script>
+  <script>
+    hljs.initHighlightingOnLoad();
+  </script>
+  </body>
+</html>

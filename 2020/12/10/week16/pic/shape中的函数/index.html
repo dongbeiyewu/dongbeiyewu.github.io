@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title> | 孙启明的blog</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.1.1/styles/solarized-light.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+    <link rel="stylesheet" href="/custom.css"/>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/icon512.png">
+    <meta name="theme-color" content="#ffffff"/>
+    
+  <meta name="generator" content="Hexo 5.2.0"></head>
+  <body>
+    <script>
+      if ('serviceWorker' in navigator && false) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('/sw.js', {scope: '/'})
+            .then(function (registration) {
+              // console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            })
+            .catch(function (err) {
+              console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+      }
+    </script>
+  <div id="page-container">
+    <nav class="navbar nav-shadow" role="navigation" aria-label="main navigation">
+  <div class="container">
+      <div class="navbar-brand">
+          <a class="navbar-item" href="/">
+              <img src="/icon192.png" height="50">
+          </a>
+          <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+             data-target="mainNavbar">
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+          </a>
+      </div>
+      <div id="mainNavbar" class="navbar-menu">
+          <div class="navbar-start">
+              <a class="navbar-item" href="/"> 孙启明的blog </a>
+              <a class="navbar-item" href="/archives"> Archives </a>
+              <a class="navbar-item" href="/about"> About </a>
+          </div>
+      </div>
+  </div>
+</nav>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+  if ($navbarBurgers.length > 0) {
+    $navbarBurgers.forEach( el => {
+      el.addEventListener('click', () => {
+        const target = el.dataset.target;
+        const $target = document.getElementById(target);
+        el.classList.toggle('is-active');
+        $target.classList.toggle('is-active');
+      });
+    });
+  }
+});
+</script>
+    <div id="content-wrap">
+        <div class="container">
+          <div class="article-container">
+  <h1 class="title is-3 is-4-mobile"></h1>
+  <article>
+      <div class="contents">
+        
+      </div>
+      <p>algebraic_simplifier.cc中经常出现shape()以及相关函数</p>
+<p>shape的含义：形状描述数组中维度的数量、每个维度的边界以及基元组件类型。对于元组，shape描述了结构（元素数和嵌套）。</p>
+<p><code>explicit Shape(const ShapeProto&amp; shape_proto);</code></p>
+<p>根据shape快照构建一个shape</p>
+<p><code>ShapeProto ToProto() const;</code></p>
+<p>返回调用者的一个shape快照</p>
+<p><code>string ToString(bool print_layout = false) const;</code></p>
+<p>返回一个可读的字符串，该字符串表示给定的形状（有或没有布局）。；例如.“F32[42,12]{0，1}”或“F32[64]”。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">int64 <span class="title">rank</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123;</span><br><span class="line">    CHECK(IsArray()) &lt;&lt; <span class="string">&quot;Non-arrays do not have a rank, shape: &quot;</span> &lt;&lt; ToString();</span><br><span class="line">    <span class="keyword">return</span> dimensions_.size();</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>返回给定形状的等级（维度数）。形状必须是数组。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">IsArray</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> primitive_util::IsArrayType(element_type()); &#125;</span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">IsTuple</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> element_type() == TUPLE; &#125;</span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">IsToken</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> element_type() == TOKEN; &#125;</span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">IsOpaque</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> element_type() == OPAQUE_TYPE; &#125;</span><br></pre></td></tr></table></figure>
+
+<p>返回形状是否为指定类型（数组、元组等）。</p>
+<p><code> bool is_static() const;</code></p>
+<p>如果形状中没有数组维度动态调整大小，则返回true。元组形状递归遍历。</p>
+<p><code>bool is_dynamic_dimension(int dimension) const &#123;     return dynamic_dimensions_.at(dimension);   &#125;</code></p>
+<p>如果给定维度动态调整大小，则返回true。</p>
+<p><code> void set_dynamic_dimension(int dimension, bool is_dynamic) &#123;     dynamic_dimensions_[dimension] = is_dynamic;   &#125;</code></p>
+<p>设置给定维度是否动态调整大小。</p>
+<p>  <code>void DeleteDimension(int64 dim_to_delete);</code></p>
+<p>从形状中删除给定尺寸。布局（如果存在）将进行调整以匹配修改后的形状。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">PrimitiveType <span class="title">element_type</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> element_type_; &#125;</span><br><span class="line"> <span class="function"><span class="keyword">void</span> <span class="title">set_element_type</span><span class="params">(PrimitiveType value)</span> </span>&#123; element_type_ = value; &#125;</span><br></pre></td></tr></table></figure>
+
+<p>访问基元类型。 </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">dimensions_size</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> dimensions_.size(); &#125;</span><br><span class="line">  <span class="function">int64 <span class="title">dimensions</span><span class="params">(<span class="keyword">int</span> index)</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> dimensions_.at(index); &#125;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">set_dimensions</span><span class="params">(<span class="keyword">int</span> index, int64 value)</span> </span>&#123; dimensions_.at(index) = value; &#125;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">add_dimensions</span><span class="params">(int64 value)</span> </span>&#123;</span><br><span class="line">    dimensions_.push_back(value);</span><br><span class="line">    dynamic_dimensions_.push_back(<span class="literal">false</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">clear_dimensions</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    dimensions_.clear();</span><br><span class="line">    dynamic_dimensions_.clear();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;int64&gt;&amp; <span class="title">dimensions</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> dimensions_; &#125;</span><br><span class="line">  <span class="function">absl::Span&lt;int64&gt; <span class="title">mutable_dimensions</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> absl::MakeSpan(dimensions_); &#125;</span><br></pre></td></tr></table></figure>
+
+<p>访问维度数组的方法。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">tuple_shapes_size</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> tuple_shapes_.size(); &#125;</span><br><span class="line"> <span class="function"><span class="keyword">const</span> Shape&amp; <span class="title">tuple_shapes</span><span class="params">(<span class="keyword">int</span> index)</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> tuple_shapes_.at(index); &#125;</span><br><span class="line"> <span class="function">Shape* <span class="title">mutable_tuple_shapes</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123; <span class="keyword">return</span> &amp;tuple_shapes_.at(index); &#125;</span><br><span class="line"> <span class="function">Shape* <span class="title">add_tuple_shapes</span><span class="params">()</span> </span>&#123;</span><br><span class="line">   tuple_shapes_.push_back(Shape());</span><br><span class="line">   <span class="keyword">return</span> &amp;tuple_shapes_.back();</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="function"><span class="keyword">void</span> <span class="title">clear_tuple_shapes</span><span class="params">()</span> </span>&#123; tuple_shapes_.clear(); &#125;</span><br><span class="line"> <span class="function"><span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;Shape&gt;&amp; <span class="title">tuple_shapes</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> tuple_shapes_; &#125;</span><br><span class="line"> <span class="function"><span class="built_in">std</span>::<span class="built_in">vector</span>&lt;Shape&gt;* <span class="title">mutable_tuple_shapes</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> &amp;tuple_shapes_; &#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>访问元组子形状的方法。此字段仅对元组形状非空。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">has_layout</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> layout_.format() != INVALID_FORMAT; &#125;</span><br><span class="line"><span class="function"><span class="keyword">const</span> Layout&amp; <span class="title">layout</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> layout_; &#125;</span><br><span class="line"><span class="function">Layout* <span class="title">mutable_layout</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> &amp;layout_; &#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">clear_layout</span><span class="params">()</span> </span>&#123; layout_.Clear(); &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Swap</span><span class="params">(Shape* other)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">using</span> <span class="built_in">std</span>::swap;</span><br><span class="line">  swap(*<span class="keyword">this</span>, *other);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Clear</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  element_type_ = PRIMITIVE_TYPE_INVALID;</span><br><span class="line">  dimensions_.clear();</span><br><span class="line">  tuple_shapes_.clear();</span><br><span class="line">  clear_layout();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="built_in">string</span> <span class="title">SerializeAsString</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> ToProto().SerializeAsString(); &#125;</span><br><span class="line"><span class="function"><span class="built_in">string</span> <span class="title">ShortDebugString</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> ToProto().ShortDebugString(); &#125;</span><br><span class="line"><span class="function"><span class="built_in">string</span> <span class="title">DebugString</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> ToProto().DebugString(); &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>访问布局的函数</p>
+<p><code>Equal()</code></p>
+<p>可配置的判断相等的函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span> <span class="keyword">operator</span>==(<span class="keyword">const</span> Shape&amp; other) <span class="keyword">const</span> &#123; <span class="keyword">return</span> Equal()(*<span class="keyword">this</span>, other); &#125;</span><br><span class="line">  <span class="keyword">bool</span> <span class="keyword">operator</span>!=(<span class="keyword">const</span> Shape&amp; other) <span class="keyword">const</span> &#123; <span class="keyword">return</span> !(*<span class="keyword">this</span> == other); &#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试形状的所有字段是否相同，等效于Equal（）。</p>
+<p><code> PrimitiveType element_type_ = PRIMITIVE_TYPE_INVALID;</code></p>
+<p>此形状的元素类型（元组、数组等）。</p>
+<p><code>  std::vector&lt;int64&gt; dimensions_;</code></p>
+<p>维度的数组边界。这仅适用于数组形状。对于动态大小的维度，此向量中的相应值是数组边界的包含上限。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ProgramShape</span><br></pre></td></tr></table></figure>
+
+<p>XLA计算的参数和输出的形状。这类似于传统的函数签名。</p>
+
+      <p class="copyright"><strong>Links: <a href="http://example.com/2020/12/10/week16/pic/shape%E4%B8%AD%E7%9A%84%E5%87%BD%E6%95%B0/">http://example.com/2020/12/10/week16/pic/shape%E4%B8%AD%E7%9A%84%E5%87%BD%E6%95%B0/</a></strong></p>
+  </article>
+  <div id="comment">
+    
+    <div id="disqus_thread"></div>
+    <script>
+      var disqus_config = function() {
+        this.page.url = "http://example.com/2020/12/10/week16/pic/shape%E4%B8%AD%E7%9A%84%E5%87%BD%E6%95%B0/"; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = "ckiimrpjb000rp0uz1ahrfmyb"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+      };
+  
+      (function() {
+        var d = document,
+          s = d.createElement("script");
+        s.src = "https://iometa.disqus.com/embed.js";
+        s.setAttribute("data-timestamp", +new Date());
+        (d.head || d.body).appendChild(s);
+      })();
+    </script>
+    
+</div>
+</div>
+        </div>
+    </div>
+    
+<footer id="footer">
+    <div class="content has-text-centered">
+        <p>
+            © 2020 <a href="http://example.com">孙启明</a>.
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>.
+            Theme <a target="_blank" rel="noopener" href="https://github.com/songquanpeng/hexo-theme-lightx">lightx</a>.
+            
+        </p>
+    </div>
+</footer>
+  </div>
+  
+    <script id="dsq-count-scr" src="//iometa.disqus.com/count.js" async></script>
+  
+  
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@latest/build/highlight.min.js"></script>
+  <script>
+    hljs.initHighlightingOnLoad();
+  </script>
+  </body>
+</html>

@@ -71,29 +71,41 @@ document.addEventListener('DOMContentLoaded', () => {
   <h1 class="title is-3 is-4-mobile"></h1>
   <article>
       <div class="contents">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#opencl%E6%89%A9%E5%B1%95"><span class="toc-text">opencl扩展</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#NumPy"><span class="toc-text">NumPy</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#NumPy%E5%AE%89%E8%A3%85"><span class="toc-text">NumPy安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8pip%E5%AE%89%E8%A3%85"><span class="toc-text">使用pip安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#linux%E5%AE%89%E8%A3%85"><span class="toc-text">linux安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E9%AA%8C%E8%AF%81"><span class="toc-text">安装验证</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NumPy-Ndarray%E5%AF%B9%E8%B1%A1"><span class="toc-text">NumPy Ndarray对象</span></a></li></ol></li></ol>
       </div>
-      <h2 id="opencl扩展"><a href="#opencl扩展" class="headerlink" title="opencl扩展"></a>opencl扩展</h2><p>  OpenCL扩展是指device支持某种特性，但这中特性并不是OpenCL标准的一部分。通过扩展，厂商可以给device增加一些新的功能，而不用考虑兼容性问题。现在各个厂商在OpenCL的实现中或多或少的使用了自己的扩展。</p>
-<p>扩展的类型分为三种：</p>
+      <h1 id="NumPy"><a href="#NumPy" class="headerlink" title="NumPy"></a>NumPy</h1><h2 id="NumPy安装"><a href="#NumPy安装" class="headerlink" title="NumPy安装"></a>NumPy安装</h2><h3 id="使用pip安装"><a href="#使用pip安装" class="headerlink" title="使用pip安装"></a>使用pip安装</h3><blockquote>
+<p><code>python -m pip install --user numpy scipy matplotlib ipython jupyter pandas sympy nose</code></p>
+</blockquote>
+<h3 id="linux安装"><a href="#linux安装" class="headerlink" title="linux安装"></a>linux安装</h3><blockquote>
+<p><code>sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose</code></p>
+</blockquote>
+<h3 id="安装验证"><a href="#安装验证" class="headerlink" title="安装验证"></a>安装验证</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; from numpy import *</span><br><span class="line">&gt;&gt;&gt; eye(4)</span><br><span class="line">array([[1., 0., 0., 0.],</span><br><span class="line">       [0., 1., 0., 0.],</span><br><span class="line">       [0., 0., 1., 0.],</span><br><span class="line">       [0., 0., 0., 1.]])</span><br></pre></td></tr></table></figure>
+<h2 id="NumPy-Ndarray对象"><a href="#NumPy-Ndarray对象" class="headerlink" title="NumPy Ndarray对象"></a>NumPy Ndarray对象</h2><p>NumPy 最重要的一个特点是其 N 维数组对象 ndarray，它是一系列同类型数据的集合，以 0 下标为开始进行集合中元素的索引。</p>
+<p>ndarray 对象是用于存放同类型元素的多维数组。</p>
+<p>ndarray 中的每个元素在内存中都有相同存储大小的区域。</p>
+<p>ndarray 内部由以下内容组成：</p>
 <ul>
-<li>Khronos OpenCL工作组批准的扩展，这种要经过一致性测试，可能会被增加到新版本的OpenCL规范中。这种扩展都以cl_khr作为扩展名。</li>
-<li>外部扩展, 以cl_ext为扩展名。这种扩展是由2个或2个以上的厂商发起，并不需要进行一致性测试。比如cl_ext_device_fission扩展。</li>
-<li>某个厂商自己的扩展，比如AMD的扩展printf</li>
+<li><p>一个指向数据（内存或内存映射文件中的一块数据）的指针。</p>
+</li>
+<li><p>数据类型或 dtype，描述在数组中的固定大小值的格子。</p>
+</li>
+<li><p>一个表示数组形状（shape）的元组，表示各维度大小的元组。</p>
+</li>
+<li><p>一个跨度元组（stride），其中的整数指的是为了前进到当前维度下一个元素需要”跨过”的字节数。</p>
+</li>
 </ul>
-<p>使用扩展</p>
-<p>OpenCL中，要使用扩展，我们必须打开扩展，在默认状态下，所有的扩展都是禁止的。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#pragma OPENCL EXTENSION extension_name : enable</span><br></pre></td></tr></table></figure>
-<p>对于OpenCL，一个函数只有在运行时，才知道其是否可用，所以要确定某个扩展是否可用，是程序员的责任，我们必须在使用前查询它的状态。下面是查询扩展是否可用的代码：<br><img src="20120131193220363%20(1).png"></p>
+<p>ndarray 的内部结构:</p>
+<p><img src="https://github.com/dongbeiyewu/xla/raw/master/week3/pic/1.png" alt="1"></p>
 
-      <p class="copyright"><strong>Links: <a href="http://example.com/2020/12/02/opencl%E6%89%A9%E5%B1%95/">http://example.com/2020/12/02/opencl%E6%89%A9%E5%B1%95/</a></strong></p>
+      <p class="copyright"><strong>Links: <a href="http://example.com/2020/12/10/week3/numpy/">http://example.com/2020/12/10/week3/numpy/</a></strong></p>
   </article>
   <div id="comment">
     
     <div id="disqus_thread"></div>
     <script>
       var disqus_config = function() {
-        this.page.url = "http://example.com/2020/12/02/opencl%E6%89%A9%E5%B1%95/"; // Replace PAGE_URL with your page's canonical URL variable
-        this.page.identifier = "ckiimrpis0002p0uzhcuxb33a"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.url = "http://example.com/2020/12/10/week3/numpy/"; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = "ckiimrpj4000gp0uzf2f16uh4"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
       };
   
       (function() {
